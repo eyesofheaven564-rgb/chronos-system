@@ -3,7 +3,7 @@
  * Replace N8N_WEBHOOK_URL with the real n8n production webhook URL.
  * Never put API keys in this file — the frontend is public.
  */
-export const N8N_WEBHOOK_URL = "YOUR_N8N_WEBHOOK_URL";
+export const N8N_WEBHOOK_URL = "https://automation.winstreet.co.in/webhook-test/jarvis";
 
 /** Milliseconds before a webhook call is treated as timed out. */
 export const REQUEST_TIMEOUT_MS = 30_000;

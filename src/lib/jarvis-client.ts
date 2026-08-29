@@ -9,7 +9,10 @@ export class JarvisUnavailableError extends Error {
 }
 
 export function isWebhookConfigured() {
-  return N8N_WEBHOOK_URL !== "YOUR_N8N_WEBHOOK_URL" && /^https?:\/\//.test(N8N_WEBHOOK_URL);
+  return (
+    (N8N_WEBHOOK_URL as string) !== "YOUR_N8N_WEBHOOK_URL" &&
+    /^https?:\/\//.test(N8N_WEBHOOK_URL)
+  );
 }
 
 /**

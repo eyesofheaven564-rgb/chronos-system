@@ -88,6 +88,8 @@
 
   --glow-soft: 0 0 40px -8px color-mix(in oklab, var(--primary) 40%, transparent);
   --glow-strong: 0 0 90px -10px color-mix(in oklab, var(--primary) 65%, transparent);
+  --neural-energy: oklch(0.75 0.16 65);
+  --neural-core: oklch(0.93 0.12 83);
 }
 
 @layer base {
@@ -138,6 +140,64 @@
 
 @utility glow-soft {
   box-shadow: var(--glow-soft);
+}
+
+@utility neural-orb {
+  --neural-energy: oklch(0.75 0.16 65);
+  --neural-core: oklch(0.93 0.12 83);
+  isolation: isolate;
+  filter: saturate(1.08);
+}
+
+@utility neural-orb-active {
+  filter: saturate(1.22) brightness(1.08);
+}
+
+@utility neural-orb-intense {
+  filter: saturate(1.38) brightness(1.14);
+}
+
+@utility neural-orb-aura {
+  background: radial-gradient(
+    circle,
+    color-mix(in oklab, var(--neural-core) 22%, transparent) 0%,
+    color-mix(in oklab, var(--neural-energy) 12%, transparent) 34%,
+    transparent 70%
+  );
+  filter: blur(22px);
+  animation: neural-aura 5s ease-in-out infinite;
+}
+
+@utility neural-orb-halo {
+  border: 1px solid color-mix(in oklab, var(--neural-energy) 20%, transparent);
+  box-shadow:
+    0 0 38px color-mix(in oklab, var(--neural-energy) 18%, transparent),
+    inset 0 0 32px color-mix(in oklab, var(--neural-energy) 10%, transparent);
+  animation: neural-halo 8s linear infinite;
+}
+
+@utility neural-orb-ring {
+  border: 1px solid color-mix(in oklab, var(--neural-energy) 36%, transparent);
+  box-shadow: 0 0 10px color-mix(in oklab, var(--neural-energy) 18%, transparent);
+  opacity: 0.58;
+}
+
+@utility neural-orb-ring-one {
+  clip-path: polygon(0 0, 100% 13%, 91% 100%, 7% 86%);
+  animation: jarvis-spin 11s linear infinite reverse;
+}
+
+@utility neural-orb-ring-two {
+  clip-path: polygon(10% 3%, 94% 0, 100% 92%, 0 100%);
+  animation: jarvis-spin 7s linear infinite;
+}
+
+@utility neural-orb-core {
+  background: radial-gradient(circle at 38% 34%, var(--neural-core), var(--neural-energy) 34%, transparent 72%);
+  box-shadow:
+    0 0 16px var(--neural-core),
+    0 0 42px color-mix(in oklab, var(--neural-energy) 72%, transparent);
+  animation: neural-core 2.8s ease-in-out infinite;
 }
 
 @keyframes jarvis-breathe {
@@ -191,6 +251,36 @@
   }
 }
 
+@keyframes neural-aura {
+  0%,
+  100% {
+    transform: scale(0.92);
+    opacity: 0.55;
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 0.92;
+  }
+}
+
+@keyframes neural-halo {
+  to {
+    transform: rotate(360deg) scale(1.03);
+  }
+}
+
+@keyframes neural-core {
+  0%,
+  100% {
+    transform: scale(0.82);
+    opacity: 0.72;
+  }
+  50% {
+    transform: scale(1.16);
+    opacity: 1;
+  }
+}
+
 @utility animate-breathe {
   animation: jarvis-breathe 6s ease-in-out infinite;
 }
@@ -208,4 +298,13 @@
 }
 @utility animate-blink {
   animation: jarvis-blink 1.4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .neural-orb-aura,
+  .neural-orb-halo,
+  .neural-orb-ring,
+  .neural-orb-core {
+    animation: none;
+  }
 }

@@ -53,6 +53,7 @@ function NeuralCanvas({ state }: { state: AssistantState }) {
     let height = 0;
     let color = "#e8a23a";
     let secondaryColor = "#ffd58a";
+    let beamColor = "#6dd9ff";
 
     const resize = () => {
       const bounds = canvas.getBoundingClientRect();
@@ -65,6 +66,7 @@ function NeuralCanvas({ state }: { state: AssistantState }) {
       const styles = getComputedStyle(canvas);
       color = styles.getPropertyValue("--neural-energy").trim() || color;
       secondaryColor = styles.getPropertyValue("--neural-core").trim() || secondaryColor;
+      beamColor = styles.getPropertyValue("--neural-beam").trim() || beamColor;
     };
 
     const draw = (time: number) => {
@@ -75,6 +77,67 @@ function NeuralCanvas({ state }: { state: AssistantState }) {
       const speed = motionQuery.matches ? 0 : STATE_SPEED[state];
       const energy = STATE_ENERGY[state];
       const rotation = time * speed;
+
+      context.globalCompositeOperation = "lighter";
+
+      // Electrical signal passing through the neural field.
+      for (let strand = 0; strand < 7; strand += 1) {
+        context.beginPath();
+        for (let x = 0; x <= width; x += 3) {
+          const proximity = 1 - Math.min(1, Math.abs(x - centerX) / (radius * 2.7));
+          const turbulence = Math.sin(x * 0.055 + time * 0.003 + strand * 1.7) * (3 + proximity * 5);
+          const micro = Math.sin(x * 0.21 - time * 0.006 + strand) * 1.8;
+          const y = centerY + turbulence + micro + (strand - 3) * 1.35;
+          if (x === 0) context.moveTo(x, y);
+          else context.lineTo(x, y);
+        }
+        context.globalAlpha = (0.08 + strand * 0.018) * energy;
+        context.lineWidth = strand === 3 ? 1.2 : 0.48;
+        context.strokeStyle = beamColor;
+        context.stroke();
+      }
+
+      // Fine meridians and latitude filaments create the engineered spherical cage.
+      context.lineWidth = 0.52;
+      for (let meridian = 0; meridian < 19; meridian += 1) {
+        context.beginPath();
+        const angle = (meridian / 19) * Math.PI + rotation * 3;
+        for (let step = 0; step <= 72; step += 1) {
+          const latitude = (step / 72) * Math.PI;
+          const x3 = Math.sin(latitude) * Math.cos(angle);
+          const y3 = Math.cos(latitude);
+          const z3 = Math.sin(latitude) * Math.sin(angle);
+          const distortion = Math.sin(latitude * 9 + time * 0.0015 + meridian) * radius * 0.018;
+          const perspective = 0.72 + (z3 + 1) * 0.15;
+          const x = centerX + x3 * (radius + distortion) * perspective;
+          const y = centerY + y3 * (radius + distortion) * perspective;
+          if (step === 0) context.moveTo(x, y);
+          else context.lineTo(x, y);
+        }
+        context.globalAlpha = (0.075 + (meridian % 4) * 0.025) * energy;
+        context.strokeStyle = color;
+        context.stroke();
+      }
+
+      for (let latitudeIndex = 1; latitudeIndex < 14; latitudeIndex += 1) {
+        const latitude = (latitudeIndex / 14) * Math.PI;
+        context.beginPath();
+        for (let step = 0; step <= 96; step += 1) {
+          const longitude = (step / 96) * Math.PI * 2 + rotation * 2;
+          const wobble = Math.sin(longitude * 6 + time * 0.001 + latitudeIndex) * radius * 0.014;
+          const x3 = Math.sin(latitude) * Math.cos(longitude);
+          const y3 = Math.cos(latitude);
+          const z3 = Math.sin(latitude) * Math.sin(longitude);
+          const perspective = 0.72 + (z3 + 1) * 0.15;
+          const x = centerX + x3 * (radius + wobble) * perspective;
+          const y = centerY + y3 * (radius + wobble) * perspective;
+          if (step === 0) context.moveTo(x, y);
+          else context.lineTo(x, y);
+        }
+        context.globalAlpha = 0.1 * energy;
+        context.strokeStyle = color;
+        context.stroke();
+      }
 
       const projected = points.map((point) => {
         const wave = Math.sin(time * 0.0018 + point.phase) * radius * 0.055 * energy;
@@ -91,7 +154,6 @@ function NeuralCanvas({ state }: { state: AssistantState }) {
         };
       });
 
-      context.globalCompositeOperation = "lighter";
       context.lineWidth = 0.55;
 
       for (let i = 0; i < projected.length; i += 1) {
@@ -134,6 +196,24 @@ function NeuralCanvas({ state }: { state: AssistantState }) {
       context.arc(centerX, centerY, radius * 0.72, 0, Math.PI * 2);
       context.fill();
 
+      // Bright irregular bands near the center suggest layered cognition rather than a solid planet.
+      for (let band = 0; band < 11; band += 1) {
+        const bandRadius = radius * (0.18 + band * 0.035);
+        context.beginPath();
+        for (let step = 0; step <= 56; step += 1) {
+          const angle = (step / 56) * Math.PI * 2;
+          const noise = Math.sin(angle * (3 + (band % 4)) + time * 0.002 + band) * radius * 0.025;
+          const x = centerX + Math.cos(angle) * (bandRadius + noise);
+          const y = centerY + Math.sin(angle) * (bandRadius * 0.58 + noise);
+          if (step === 0) context.moveTo(x, y);
+          else context.lineTo(x, y);
+        }
+        context.globalAlpha = (0.09 + band * 0.012) * energy;
+        context.lineWidth = band % 3 === 0 ? 1.15 : 0.55;
+        context.strokeStyle = band % 4 === 0 ? secondaryColor : color;
+        context.stroke();
+      }
+
       context.globalCompositeOperation = "source-over";
       context.globalAlpha = 1;
       frame = window.requestAnimationFrame(draw);
@@ -150,7 +230,13 @@ function NeuralCanvas({ state }: { state: AssistantState }) {
     };
   }, [state]);
 
-  return <canvas ref={canvasRef} className="absolute inset-0 size-full" aria-hidden="true" />;
+  return (
+    <canvas
+      ref={canvasRef}
+      className="absolute left-1/2 top-0 h-full w-[170%] max-w-none -translate-x-1/2"
+      aria-hidden="true"
+    />
+  );
 }
 
 export function Orb({ state }: { state: AssistantState }) {
@@ -171,7 +257,7 @@ export function Orb({ state }: { state: AssistantState }) {
       <NeuralCanvas state={state} />
       <div className="neural-orb-ring neural-orb-ring-one absolute inset-[21%] rounded-full" />
       <div className="neural-orb-ring neural-orb-ring-two absolute inset-[25%] rounded-full" />
-      <div className="neural-orb-core absolute size-[15%] rounded-full" />
+      <div className="neural-orb-core absolute size-[8%] rounded-full" />
     </div>
   );
 }

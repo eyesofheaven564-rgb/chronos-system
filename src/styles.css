@@ -90,6 +90,7 @@
   --glow-strong: 0 0 90px -10px color-mix(in oklab, var(--primary) 65%, transparent);
   --neural-energy: oklch(0.75 0.16 65);
   --neural-core: oklch(0.93 0.12 83);
+  --neural-beam: oklch(0.82 0.12 220);
 }
 
 @layer base {
@@ -145,6 +146,7 @@
 @utility neural-orb {
   --neural-energy: oklch(0.75 0.16 65);
   --neural-core: oklch(0.93 0.12 83);
+  --neural-beam: oklch(0.82 0.12 220);
   isolation: isolate;
   filter: saturate(1.08);
 }

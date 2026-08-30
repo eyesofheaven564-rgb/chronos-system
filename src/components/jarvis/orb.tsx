@@ -96,8 +96,10 @@ function NeuralCanvas({ state }: { state: AssistantState }) {
 
       for (let i = 0; i < projected.length; i += 1) {
         const first = projected[i];
+        if (!first) continue;
         for (let j = i + 1; j < projected.length; j += 1) {
           const second = projected[j];
+          if (!second) continue;
           const distance = Math.hypot(first.x - second.x, first.y - second.y);
           if (distance > radius * 0.29) continue;
           const depth = Math.max(0.12, (first.z + second.z + 2) / 4);
